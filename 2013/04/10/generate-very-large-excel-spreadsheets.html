@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>generate very large excel spreadsheets using apache poi and jdbc</title><!-- Begin Jekyll SEO tag v2.6.1 -->
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="generate very large excel spreadsheets using apache poi and jdbc" />
+<meta name="author" content="_rootnode" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In our last project we had a requirement to generate an excel report. Looks like a straight forward requirement, right? Even though the requirement looks simple on paper, we ran into quite a few issues. The number of records in the excel sheet varied between 1L and 6L. We had a logic in place to put these records across sheets with each sheet containing not more than 60k records. But we faced a few issues while generating the excel.Problems:- The system ran out of heap space during excel generation and we ran into OOM errors several times. - We couldn&#39;t paginate the query that we used to pull the data as it was generated dynamically. We had to run the query all at once and pull the data. Couple of observations:- setFetchSize - to pull more records from the DB.The default number of rows that Oracle returns when you query the DB is 10. So, in our case, with a dataset containing well over 2L rows, it meant 20,000 DB hits. We were able to gain a significant improvement in performance by overriding the setFetchSize(int n) before running the query. In our case, we&#39;d set the fetch size to 2000.&nbsp;- Using SXSSF implementation instead of the usual XSSF/HSSF implementations.When we are dealing with excel sheets containing large data sets it&#39;s always better to use Apache POI&#39;s SXSSF Implementation so that we don&#39;t run into OOMs.Do let me know if there are any better ways to deal with such requirements.Happy coding.~ cheers.!" />
+<meta property="og:description" content="In our last project we had a requirement to generate an excel report. Looks like a straight forward requirement, right? Even though the requirement looks simple on paper, we ran into quite a few issues. The number of records in the excel sheet varied between 1L and 6L. We had a logic in place to put these records across sheets with each sheet containing not more than 60k records. But we faced a few issues while generating the excel.Problems:- The system ran out of heap space during excel generation and we ran into OOM errors several times. - We couldn&#39;t paginate the query that we used to pull the data as it was generated dynamically. We had to run the query all at once and pull the data. Couple of observations:- setFetchSize - to pull more records from the DB.The default number of rows that Oracle returns when you query the DB is 10. So, in our case, with a dataset containing well over 2L rows, it meant 20,000 DB hits. We were able to gain a significant improvement in performance by overriding the setFetchSize(int n) before running the query. In our case, we&#39;d set the fetch size to 2000.&nbsp;- Using SXSSF implementation instead of the usual XSSF/HSSF implementations.When we are dealing with excel sheets containing large data sets it&#39;s always better to use Apache POI&#39;s SXSSF Implementation so that we don&#39;t run into OOMs.Do let me know if there are any better ways to deal with such requirements.Happy coding.~ cheers.!" />
+<link rel="canonical" href="http://localhost:4000/2013/04/10/generate-very-large-excel-spreadsheets.html" />
+<meta property="og:url" content="http://localhost:4000/2013/04/10/generate-very-large-excel-spreadsheets.html" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-04-10T11:01:00-07:00" />
+<script type="application/ld+json">
+{"description":"In our last project we had a requirement to generate an excel report. Looks like a straight forward requirement, right? Even though the requirement looks simple on paper, we ran into quite a few issues. The number of records in the excel sheet varied between 1L and 6L. We had a logic in place to put these records across sheets with each sheet containing not more than 60k records. But we faced a few issues while generating the excel.Problems:- The system ran out of heap space during excel generation and we ran into OOM errors several times. - We couldn&#39;t paginate the query that we used to pull the data as it was generated dynamically. We had to run the query all at once and pull the data. Couple of observations:- setFetchSize - to pull more records from the DB.The default number of rows that Oracle returns when you query the DB is 10. So, in our case, with a dataset containing well over 2L rows, it meant 20,000 DB hits. We were able to gain a significant improvement in performance by overriding the setFetchSize(int n) before running the query. In our case, we&#39;d set the fetch size to 2000.&nbsp;- Using SXSSF implementation instead of the usual XSSF/HSSF implementations.When we are dealing with excel sheets containing large data sets it&#39;s always better to use Apache POI&#39;s SXSSF Implementation so that we don&#39;t run into OOMs.Do let me know if there are any better ways to deal with such requirements.Happy coding.~ cheers.!","@type":"BlogPosting","url":"http://localhost:4000/2013/04/10/generate-very-large-excel-spreadsheets.html","headline":"generate very large excel spreadsheets using apache poi and jdbc","dateModified":"2013-04-10T11:01:00-07:00","datePublished":"2013-04-10T11:01:00-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2013/04/10/generate-very-large-excel-spreadsheets.html"},"author":{"@type":"Person","name":"_rootnode"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" type="text/css" href="/assets/main-light.css"></head>
+<body>
+    <div class="container"><header>
+  <div class="menu">
+    <ul><li><a href="/">/home</a></li><li><a href="/about/">/about</a></li></ul>
+  </div>
+</header>
+<main>
+      <b>generate very large excel spreadsheets using apache poi and jdbc</b>
+<br>
+<br>
+<div dir="ltr" style="text-align: left;" trbidi="on"><div class="MsoNormal" style="margin-bottom: 0.0001pt;">In our last project we had a requirement to generate an excel report. Looks like a straight forward requirement, right? Even though the requirement looks simple on paper, we ran into quite a few issues. The number of records in the excel sheet varied between 1L and 6L. We had a logic in place to put these records across sheets with each sheet containing not more than 60k records. But we faced a few issues while generating the excel.</div><div class="MsoNormal" style="margin-bottom: 0.0001pt;"><br /></div><div class="MsoNormal" style="margin-bottom: 0.0001pt;"><b><u>Problems</u></b>:</div><div class="MsoNormal" style="margin-bottom: 0.0001pt;">- The system ran out of heap space during excel generation and we ran into OOM errors several times. </div><div class="MsoNormal" style="margin-bottom: 0.0001pt;">- We couldn't paginate the query that we used to pull the data as it was generated dynamically. We had to run the query all at once and pull the data. </div><div class="MsoNormal" style="margin-bottom: 0.0001pt;"><br /></div><div class="MsoNormal" style="margin-bottom: 0.0001pt;"><b><u>Couple of observations</u></b>:</div><div class="MsoNormal" style="margin-bottom: 0.0001pt;"><b>- <u><span style="color: blue;"><a href="http://docs.oracle.com/cd/B13789_01/java.101/b10979/basic.htm#g1028323">setFetchSize</a></span></u> - to pull more records from the DB.</b></div><div class="MsoNormal" style="margin-bottom: 0.0001pt;">The default number of rows that Oracle returns when you query the DB is 10. So, in our case, with a dataset containing well over 2L rows, it meant 20,000 DB hits. We were able to gain a significant improvement in performance by overriding the setFetchSize(int n) before running the query. In our case, we'd set the fetch size to 2000.&nbsp;</div><div class="MsoNormal" style="margin-bottom: 0.0001pt;"><b>- Using <span style="color: blue;"><a href="http://poi.apache.org/spreadsheet/how-to.html#sxssf">SXSSF implementation</a></span> instead of the usual XSSF/HSSF implementations.</b></div><div class="MsoNormal" style="margin-bottom: 0.0001pt;">When we are dealing with excel sheets containing large data sets it's always better to use Apache POI's SXSSF Implementation so that we don't run into OOMs.</div><div class="MsoNormal" style="margin-bottom: 0.0001pt;"><br /></div><div class="MsoNormal" style="margin-bottom: 0.0001pt;">Do let me know if there are any better ways to deal with such requirements.</div><div class="MsoNormal" style="margin-bottom: 0.0001pt;"><br /></div><div class="MsoNormal" style="margin-bottom: 0.0001pt;">Happy coding.<br />~ cheers.!</div></div>
+<br>
+<br>
+
+<a href="/tag/jdbc/index.html" rel="tag">jdbc</a>
+
+<a href="/tag/excel/index.html" rel="tag">excel</a>
+
+<a href="/tag/sxssf/index.html" rel="tag">sxssf</a>
+
+<a href="/tag/apachepoi/index.html" rel="tag">apachepoi</a>
+
+<a href="/tag/java/index.html" rel="tag">java</a>
+
+
+
+    </main><footer>
+  
+</footer>
+</div>
+  </body>
+</html>
